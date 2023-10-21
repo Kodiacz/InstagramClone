@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Button, TextInput, View } from 'react-native'
-import * as firebaseAuth from 'firebase/auth'
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/auth'
+import 'firebase/compat/firestore'
 
 interface ILoginProps {
 
@@ -32,7 +34,7 @@ export class Login extends Component<ILoginProps, ILoginState> {
         console.log('email => ', email)
         console.log('password  => ', password)
 
-        firebaseAuth.signInWithEmailAndPassword(firebaseAuth.getAuth(), email, password)
+        firebase.auth().signInWithEmailAndPassword(email, password)
             .then((result) => { console.log(result) })
             .catch((error) => console.log(error))
 

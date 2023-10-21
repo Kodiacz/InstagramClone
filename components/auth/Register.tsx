@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { Button, TextInput, View } from 'react-native'
-import * as firebaseAuth from 'firebase/auth'
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
 interface IRegisterProps {
 
@@ -39,7 +41,7 @@ export class Register extends Component<IRegisterProps, IRegisterState> {
         console.log(confirmPassword, "confirmPassword")
 
         if (password === confirmPassword) {
-            firebaseAuth.createUserWithEmailAndPassword(firebaseAuth.getAuth(), email, password)
+            firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then((result) => {
                     console.log(result)
                     this.setState({
