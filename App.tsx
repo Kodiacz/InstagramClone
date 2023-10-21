@@ -1,5 +1,9 @@
-import * as firebaseApp from 'firebase/app'
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/firestore';
 
+
+import React, { Component } from 'react'
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -12,8 +16,8 @@ const firebaseConfig = {
   measurementId: "G-E81QMK49B8"
 };
 
-if (firebaseApp.getApps().length === 0) {
-  console.log(firebaseApp.initializeApp(firebaseConfig))
+if (firebase.apps.length === 0) {
+  console.log(firebase.initializeApp(firebaseConfig))
 }
 
 import { StatusBar } from 'expo-status-bar';
@@ -31,14 +35,38 @@ type MainStackParamList = {
 
 const Stack = createStackNavigator<MainStackParamList>()
 
-export default function App() {
-  return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName='Landing'>
-        <Stack.Screen name='Landing' component={LandingScreen} options={{ headerShown: false }} />
-        <Stack.Screen name='Register' component={RegisterScreen} />
-        <Stack.Screen name='Login' component={LoginScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-} 
+interface IAppProp {
+
+}
+
+interface IAppState {
+
+}
+
+export class App extends Component<IAppProp, IAppState> {
+
+  constructor(props: IAppProp) {
+    super(props);
+    this.state = {
+      loaded: false,
+    }
+  }
+
+  componentDidMount(): void {
+    firebase.auth().onAuthStateChanged
+  }
+
+  render() {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName='Landing'>
+          <Stack.Screen name='Landing' component={LandingScreen} options={{ headerShown: false }} />
+          <Stack.Screen name='Register' component={RegisterScreen} />
+          <Stack.Screen name='Login' component={LoginScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+}
+
+export default App
