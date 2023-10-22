@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@react-navigation/stack": "^6.3.18",
+    "@reduxjs/toolkit": "^1.9.7",
+    "@types/react-redux": "^7.1.28",
     "expo": "~49.0.13",
     "expo-status-bar": "~1.6.0",
     "firebase": "^10.5.0",
