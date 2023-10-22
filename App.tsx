@@ -1,9 +1,17 @@
+// Local imports
+
+
+// Reac imports
+import React, { Component } from 'react'
+import { View, Text } from 'react-native'
+
+// Firebase imports
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 
 
-import React, { Component } from 'react'
+
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -40,7 +48,8 @@ interface IAppProp {
 }
 
 interface IAppState {
-
+  loggedIn?: boolean,
+  loaded?: boolean,
 }
 
 export class App extends Component<IAppProp, IAppState> {
@@ -53,19 +62,49 @@ export class App extends Component<IAppProp, IAppState> {
   }
 
   componentDidMount(): void {
-    firebase.auth().onAuthStateChanged
+    firebase.auth().onAuthStateChanged((user) => {
+      if (!user) {
+        this.setState({
+          loggedIn: false,
+          loaded: true,
+        })
+      } else {
+        this.setState({
+          loggedIn: true,
+          loaded: true,
+        })
+      }
+    })
   }
 
   render() {
+    const { loggedIn, loaded } = this.state
+
+    if (!loaded) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <Text>Loading</Text>
+        </View>
+      )
+    }
+
+    if (!loggedIn) {
+      return (
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName='Landing'>
+            <Stack.Screen name='Landing' component={LandingScreen} options={{ headerShown: false }} />
+            <Stack.Screen name='Register' component={RegisterScreen} />
+            <Stack.Screen name='Login' component={LoginScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      );
+    }
+
     return (
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName='Landing'>
-          <Stack.Screen name='Landing' component={LandingScreen} options={{ headerShown: false }} />
-          <Stack.Screen name='Register' component={RegisterScreen} />
-          <Stack.Screen name='Login' component={LoginScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <Text>User is logged in</Text>
+      </View>
+    )
   }
 }
 
