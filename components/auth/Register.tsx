@@ -43,6 +43,12 @@ export class Register extends Component<IRegisterProps, IRegisterState> {
         if (password === confirmPassword) {
             firebase.auth().createUserWithEmailAndPassword(email, password)
                 .then((result) => {
+                    firebase.firestore().collection("user")
+                        .doc(firebase.auth().currentUser!.uid)
+                        .set({
+                            name,
+                            email,
+                        });
                     console.log(result)
                     this.setState({
                         email: '',
