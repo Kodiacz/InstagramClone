@@ -14,8 +14,7 @@ export function fetchUser() {
 			.get()
 			.then((snapshot) => {
 				if (snapshot.exists) {
-					console.log('index.ts - snapshot => ', snapshot);
-					dispatch({ type: USER_STATE_CHANGE, currentUser: snapshot.data });
+					dispatch({ type: USER_STATE_CHANGE, currentUser: snapshot.data() });
 				} else {
 					console.log('does not exists');
 				}
