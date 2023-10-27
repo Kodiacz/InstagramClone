@@ -31,13 +31,6 @@ export class Register extends Component<IRegisterProps, IRegisterState> {
 		const { email, password, name, confirmPassword }: IRegisterState =
 			this.state;
 
-		console.log('Register.tsx - password => ', password, 'password');
-		console.log(
-			'Register.tsx - confirmPassword => ',
-			confirmPassword,
-			'confirmPassword',
-		);
-
 		if (password === confirmPassword) {
 			firebase
 				.auth()
@@ -51,7 +44,7 @@ export class Register extends Component<IRegisterProps, IRegisterState> {
 							name,
 							email,
 						});
-					console.log('Register.tsx - result => ', result);
+
 					this.setState({
 						email: '',
 						name: '',
