@@ -3,6 +3,7 @@ import { default as LandingScreen } from './src/components/auth/Landing';
 import { Register as RegisterScreen } from './src/components/auth/Register';
 import { Login as LoginScreen } from './src/components/auth/Login';
 import MainScreen from './src/components/Main';
+import AddScreen from './src/components/main/Add';
 
 // React imports
 import React, { Component } from 'react';
@@ -46,6 +47,8 @@ type MainStackParamList = {
 	Landing: { navigation: NavigationProp<ParamListBase> };
 	Register: {};
 	Login: {};
+	Main: {};
+	Add: {};
 };
 
 const Stack = createStackNavigator<MainStackParamList>();
@@ -110,7 +113,16 @@ export class App extends Component<IAppProp, IAppState> {
 
 		return (
 			<Provider store={store}>
-				<MainScreen />
+				<NavigationContainer>
+					<Stack.Navigator initialRouteName="Main">
+						<Stack.Screen
+							name="Main"
+							component={MainScreen}
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen name="Add" component={AddScreen} />
+					</Stack.Navigator>
+				</NavigationContainer>
 			</Provider>
 		);
 	}
