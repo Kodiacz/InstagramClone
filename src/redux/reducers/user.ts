@@ -5,6 +5,6 @@ const initialState = {
 export const user = (state = initialState, action: any) => {
 	return {
 		...state,
-		currenUser: action.currentUser,
+		currentUser: action.currentUser,
 	};
 };
