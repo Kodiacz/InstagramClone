@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { Button, TextInput, View } from 'react-native';
+
+// firebase
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
@@ -23,24 +25,27 @@ export class Login extends Component<ILoginProps, ILoginState> {
 		this.onSignIn = this.onSignIn.bind(this);
 	}
 
-	onSignIn() {
-		const { email, password }: ILoginState = this.state;
-
-		console.log('Login.tsx - email => ', email);
-		console.log('Login.tsx - password  => ', password);
-
-		firebase
-			.auth()
-			.signInWithEmailAndPassword(email, password)
-			.then((result) => {
-				console.log('Login.tsx - result => ', result);
-			})
-			.catch((error) => console.log(error));
-
+	componentDidCatch(): void {
 		this.setState({
 			email: '',
 			password: '',
 		});
+	}
+
+	onSignIn() {
+		const { email, password }: ILoginState = this.state;
+
+		firebase
+			.auth()
+			.signInWithEmailAndPassword(email, password)
+			.then((result) => {})
+			.catch((error) => {
+				this.setState({
+					email: '',
+					password: '',
+				});
+				console.log(error);
+			});
 	}
 
 	render() {
@@ -48,10 +53,12 @@ export class Login extends Component<ILoginProps, ILoginState> {
 			<View>
 				<TextInput
 					placeholder="email"
+					value={this.state.email}
 					onChangeText={(email: string) => this.setState({ email: email })}
 				/>
 				<TextInput
 					placeholder="password"
+					value={this.state.password}
 					secureTextEntry={true}
 					onChangeText={(password: string) =>
 						this.setState({ password: password })
