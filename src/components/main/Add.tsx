@@ -1,5 +1,5 @@
 import { Camera, CameraType } from 'expo-camera';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	Button,
 	StyleSheet,
@@ -8,12 +8,22 @@ import {
 	View,
 	Image,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function App() {
 	const [type, setType] = useState(CameraType.back);
 	const [camera, setCamera] = useState<Camera | null>();
 	const [image, setImage] = useState<string | null>(null);
 	const [permission, requestPermission] = Camera.useCameraPermissions();
+
+	useEffect(() => {
+		(async () => {
+			const { status } = await Camera.requestCameraPermissionsAsync();
+			if (status !== 'granted') {
+				alert('Sorry, we need camera roll persmissions to make this work!');
+			}
+		})();
+	}, []);
 
 	if (!permission) {
 		// Camera permissions are still loading
@@ -58,13 +68,21 @@ export default function App() {
 					ratio={'1:1'}
 				/>
 			</View>
+			<View style={styles.buttonContainer}>
+				<TouchableOpacity
+					onPress={toggleCameraType}
+					style={styles.button}
+				>
+					<Text style={styles.text}>Flip camera</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					onPress={() => takePicture()}
+					style={styles.button}
+				>
+					<Text style={styles.text}>Take picture</Text>
+				</TouchableOpacity>
+			</View>
 
-			<TouchableOpacity onPress={toggleCameraType}>
-				<Text style={styles.text}>Flip camera</Text>
-			</TouchableOpacity>
-			<TouchableOpacity onPress={() => takePicture()}>
-				<Text style={styles.text}>Take picture</Text>
-			</TouchableOpacity>
 			{image && (
 				<Image
 					source={{ uri: image }}
@@ -91,17 +109,16 @@ const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: 'row',
 		backgroundColor: 'transparent',
-		margin: 64,
+		justifyContent: 'space-around',
 	},
 	button: {
-		flex: 1,
-		alignSelf: 'flex-end',
-		alignItems: 'center',
+		// flex: 1,
+		// alignItems: 'center',
 	},
 	text: {
 		fontSize: 18,
 		marginBottom: 10,
 		fontWeight: 'bold',
-		color: 'white',
+		color: 'blue',
 	},
 });
