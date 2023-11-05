@@ -1,11 +1,11 @@
 // local improts
-import { USER_STATE_CHANGE } from '../constants';
+import { USER_POST_STATE_CHANGE, USER_STATE_CHANGE } from '../constants';
 
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 
-export function fetchUser() {
+function fetchUser() {
 	return (dispatch: any) => {
 		firebase
 			.firestore()
@@ -21,3 +21,25 @@ export function fetchUser() {
 			});
 	};
 }
+
+function fetchUserPosts() {
+	return (dispatch: any) => {
+		firebase
+			.firestore()
+			.collection('posts')
+			.doc(firebase.auth().currentUser?.uid)
+			.collection('userPosts')
+			.orderBy('creation', 'asc')
+			.get()
+			.then((snapshot) => {
+				let posts = snapshot.docs.map((doc) => {
+					const data = doc.data();
+					const id = doc.id;
+					return { id, ...data };
+				});
+				dispatch({ type: USER_POST_STATE_CHANGE, posts });
+			});
+	};
+}
+
+export { fetchUser, fetchUserPosts };
