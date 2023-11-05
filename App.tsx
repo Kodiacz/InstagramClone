@@ -4,11 +4,13 @@ import { Register as RegisterScreen } from './src/components/auth/Register';
 import { Login as LoginScreen } from './src/components/auth/Login';
 import MainScreen from './src/components/Main';
 import AddScreen from './src/components/main/Add';
+import SaveScreen from './src/components/Save';
 
 // React imports
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Platform } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import {
 	NavigationContainer,
 	NavigationProp,
@@ -48,12 +50,15 @@ type MainStackParamList = {
 	Register: {};
 	Login: {};
 	Main: {};
-	Add: {};
+	Add: { navigation: NavigationProp<ParamListBase> };
+	Save: { image: string };
 };
 
 const Stack = createStackNavigator<MainStackParamList>();
 
-interface IAppProp {}
+interface IAppProp {
+	navigation: any;
+}
 
 interface IAppState {
 	loggedIn?: boolean;
@@ -97,33 +102,58 @@ export class App extends Component<IAppProp, IAppState> {
 
 		if (!loggedIn) {
 			return (
-				<NavigationContainer>
-					<Stack.Navigator initialRouteName="Landing">
-						<Stack.Screen
-							name="Landing"
-							component={LandingScreen}
-							options={{ headerShown: false }}
-						/>
-						<Stack.Screen name="Register" component={RegisterScreen} />
-						<Stack.Screen name="Login" component={LoginScreen} />
-					</Stack.Navigator>
-				</NavigationContainer>
+				<SafeAreaProvider>
+					<NavigationContainer>
+						<Stack.Navigator initialRouteName="Landing">
+							<Stack.Screen
+								name="Landing"
+								component={LandingScreen}
+								options={{ headerShown: false }}
+							/>
+							<Stack.Screen
+								name="Register"
+								component={RegisterScreen}
+							/>
+							<Stack.Screen
+								name="Login"
+								component={LoginScreen}
+							/>
+						</Stack.Navigator>
+					</NavigationContainer>
+				</SafeAreaProvider>
 			);
 		}
 
 		return (
-			<Provider store={store}>
-				<NavigationContainer>
-					<Stack.Navigator initialRouteName="Main">
-						<Stack.Screen
-							name="Main"
-							component={MainScreen}
-							options={{ headerShown: false }}
-						/>
-						<Stack.Screen name="Add" component={AddScreen} />
-					</Stack.Navigator>
-				</NavigationContainer>
-			</Provider>
+			<SafeAreaProvider>
+				<Provider store={store}>
+					<NavigationContainer>
+						<Stack.Navigator initialRouteName="Main">
+							<Stack.Screen
+								name="Main"
+								component={MainScreen}
+								options={{ headerShown: false }}
+							/>
+							<Stack.Screen
+								name="Add"
+								component={AddScreen}
+								initialParams={this.props.navigation}
+							/>
+							<Stack.Screen
+								name="Save"
+								component={SaveScreen}
+								initialParams={this.props.navigation}
+								options={{
+									headerStyle: null,
+									headerTitleStyle: {
+										paddingTop: 0,
+									},
+								}}
+							/>
+						</Stack.Navigator>
+					</NavigationContainer>
+				</Provider>
+			</SafeAreaProvider>
 		);
 	}
 }
