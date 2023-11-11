@@ -9,28 +9,41 @@ import {
 	Image,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { NavigationProp, ParamListBase } from '@react-navigation/native';
+import useSafeArea from '../../custom-hooks/useSafeView';
 
-export default function App() {
+interface IAppProps {
+	navigation: NavigationProp<ParamListBase>;
+}
+
+export default function App({ navigation }: IAppProps) {
+	const [hasGalleryPermission, setHasGalleryPermission] = useState<boolean>();
+	const [hasCameraPermission, setHasCameraPermission] = useState<boolean>();
 	const [type, setType] = useState(CameraType.back);
 	const [camera, setCamera] = useState<Camera | null>();
 	const [image, setImage] = useState<string | null>(null);
 	const [permission, requestPermission] = Camera.useCameraPermissions();
+	const { safeArea } = useSafeArea();
+
+	console.log(safeArea);
 
 	useEffect(() => {
 		(async () => {
-			const { status } = await Camera.requestCameraPermissionsAsync();
-			if (status !== 'granted') {
-				alert('Sorry, we need camera roll persmissions to make this work!');
-			}
+			const cameraStatus = await Camera.requestCameraPermissionsAsync();
+			setHasCameraPermission(cameraStatus.status === 'granted');
+
+			const galleryStatus =
+				await ImagePicker.requestMediaLibraryPermissionsAsync();
+			setHasGalleryPermission(galleryStatus.status === 'granted');
 		})();
 	}, []);
 
-	if (!permission) {
+	if (hasCameraPermission === null || hasGalleryPermission === null) {
 		// Camera permissions are still loading
 		return <View />;
 	}
 
-	if (!permission.granted) {
+	if (hasCameraPermission === false || hasGalleryPermission === false) {
 		// Camera permissions are not granted yet
 		return (
 			<View style={styles.container}>
@@ -58,8 +71,27 @@ export default function App() {
 		);
 	}
 
+	const pickImage = async () => {
+		// No permissions request is necessary for launching the image library
+		let result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsEditing: true,
+			aspect: [1, 1],
+			quality: 1,
+		});
+
+		console.log(result);
+
+		if (!result.canceled) {
+			setImage(result.assets[0].uri);
+		}
+	};
+	console.log('{ ...styles.container, ...safeArea } => ', {
+		...styles.container,
+		...safeArea,
+	});
 	return (
-		<View style={styles.container}>
+		<View style={{ ...safeArea, ...styles.container }}>
 			<View style={styles.cameraContainer}>
 				<Camera
 					ref={(ref) => setCamera(ref)}
@@ -81,6 +113,21 @@ export default function App() {
 				>
 					<Text style={styles.text}>Take picture</Text>
 				</TouchableOpacity>
+				<TouchableOpacity
+					onPress={() => pickImage()}
+					style={styles.button}
+				>
+					<Text style={styles.text}>Pick image from gallery</Text>
+				</TouchableOpacity>
+				<TouchableOpacity
+					onPress={() => {
+						console.log(image);
+						navigation.navigate('Save', { image });
+					}}
+					style={styles.button}
+				>
+					<Text style={styles.text}>Save</Text>
+				</TouchableOpacity>
 			</View>
 
 			{image && (
@@ -96,6 +143,7 @@ export default function App() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		paddingTop: 0,
 	},
 	cameraContainer: {
 		flex: 1,
@@ -103,21 +151,16 @@ const styles = StyleSheet.create({
 	},
 	camera: {
 		flex: 1,
-		aspectRatio: 1,
+		// aspectRatio: 1,
 	},
 	buttonContainer: {
-		flex: 1,
-		flexDirection: 'row',
-		backgroundColor: 'transparent',
-		justifyContent: 'space-around',
+		flex: 0,
+		alignItems: 'center',
+		justifyContent: 'center',
 	},
-	button: {
-		// flex: 1,
-		// alignItems: 'center',
-	},
+	button: {},
 	text: {
 		fontSize: 18,
-		marginBottom: 10,
 		fontWeight: 'bold',
 		color: 'blue',
 	},
