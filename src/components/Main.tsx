@@ -10,6 +10,7 @@ import { fetchUser, fetchUserPosts } from '../redux/actions';
 // Local imports
 import FeedScreen from './main/Feed';
 import ProfileScreen from './main/Profile';
+import { User } from '../utils/types';
 
 interface IMainProps {
 	fetchUser: any;
